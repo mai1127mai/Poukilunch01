@@ -1,0 +1,9 @@
+{
+  "name":"Pouki lunch",
+  "short_name":"Pouki",
+  "start_url":".",
+  "display":"standalone",
+  "background_color":"#f6f0e4",
+  "theme_color":"#f6f0e4",
+  "icons":[]
+}

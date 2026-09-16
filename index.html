@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f0e4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pouki">
+<link rel="manifest" href="manifest.json">
+<title>Pouki lunch</title>
+<style>
+:root{--cream:#f6f0e4;--ink:#202323;--terr:#b86c59;--blush:#dfb0aa;--sage:#b6c4a9;--blue:#b4c7cc;--lav:#c9b8ca;--white:#fffaf1}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}button{font:inherit;color:inherit;border:0}
+.app{max-width:520px;margin:auto;min-height:100svh;padding:28px 20px 34px}
+header{text-align:center;position:relative;margin-bottom:28px}
+.logo{font-family:Georgia,serif;font-size:46px;letter-spacing:-1.5px;line-height:.9}.sub{font:italic 25px Georgia,serif;margin-top:7px}
+.gear{position:absolute;right:3px;top:8px;background:none;font-size:19px}
+.kicker{text-align:center;font:15px Georgia,serif;margin-bottom:3px}.title{text-align:center;font:italic 29px Georgia,serif;margin:0 0 24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cat{height:91px;border-radius:19px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:var(--white);box-shadow:0 1px 0 #00000008}.cat:nth-child(1){background:var(--blush)}.cat:nth-child(2){background:var(--sage)}.cat:nth-child(3){background:#d8a08f}.cat:nth-child(4){background:var(--blue)}.cat:nth-child(5){background:#c4d0b9}.cat:nth-child(6){background:var(--lav)}.cat .icon{font-size:22px}.cat span:last-child{font:16px Georgia,serif}
+.dart{margin-top:22px;width:100%;padding:17px 20px;border-radius:22px;background:var(--ink);color:white;display:flex;align-items:center;gap:14px;text-align:left;cursor:pointer}.dart .big{font:20px Georgia,serif}.dart small{opacity:.7}.dart .arrow{margin-left:auto;font-size:20px}
+.view{display:none}.view.active{display:block}.back{background:none;padding:4px 0;margin-bottom:18px;font-size:15px;cursor:pointer}.view h1{font:34px Georgia,serif;margin:0 0 20px}.restaurant{padding:17px 0;border-bottom:1px solid #20232320}.restaurant h2{font:20px Georgia,serif;margin:0 0 7px}.meta{font-size:13px;line-height:1.65;opacity:.72}.lo{margin-top:3px}
+.darts{text-align:center}.board{width:255px;height:255px;border-radius:50%;background:repeating-conic-gradient(from 0deg,#202323 0 15deg,#f6f0e4 15deg 30deg);border:9px solid var(--terr);margin:38px auto 25px;position:relative;box-shadow:0 5px 20px #00000018}.board:after{content:"";position:absolute;inset:75px;border-radius:50%;border:5px solid var(--blush);background:var(--ink)}.bull{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);font-size:29px}.result{font:25px Georgia,serif;margin:10px 0 5px}.resultmeta{font-size:13px;opacity:.7}.throw{margin-top:22px;background:var(--ink);color:white;border-radius:20px;padding:15px 30px;cursor:pointer}
+</style>
+</head>
+<body>
+<main class="app">
+<section id="home" class="view active">
+<header><div class="logo">Pouki</div><div class="sub">lunch</div><button class="gear">⚙︎</button></header>
+<div class="kicker">Your Ebisu</div><div class="title">lunch guide</div>
+<div class="grid" id="categories"></div>
+<button class="dart" onclick="openDarts()"><span style="font-size:24px">🎯</span><span><div class="big">DARTS</div><small>Completely random restaurant</small></span><span class="arrow">›</span></button>
+</section>
+
+<section id="list" class="view">
+<button class="back" onclick="goHome()">‹ Back</button><h1 id="listTitle"></h1><div id="restaurantList"></div>
+</section>
+
+<section id="darts" class="view darts">
+<button class="back" onclick="goHome()" style="text-align:left;width:100%">‹ Back</button>
+<h1 style="margin-top:10px">DARTS</h1><div style="font:italic 17px Georgia,serif;opacity:.7">Let’s leave it to fate.</div>
+<div class="board"><div class="bull">🎯</div></div>
+<div style="font-size:12px;opacity:.65">Today’s lunch:</div>
+<div class="result" id="dartResult">—</div><div class="resultmeta" id="dartMeta">Throw the dart.</div>
+<button class="throw" onclick="throwDart()">🎲 Throw!</button>
+</section>
+</main>
+<script>
+const cats=[
+["🇯🇵","Japanese","blush"],["🇮🇹","Italian","sage"],["🇨🇳","Chinese","terr"],["🌎","International","blue"],["🥗","Healthy","green"],["☕","Café","lav"]
+];
+const data=[
+["えびす焼魚食堂","Japanese","Mon–Sat","14:30"],["なかよし","Japanese","Mon–Sun","No lunch closing"],["おはし","Japanese","Mon–Sun","No lunch closing"],["ごはんや一芯","Japanese","Mon–Sun","14:00"],
+["パルテノぺ","Italian","Tue–Sun","14:00"],["PICICA PICICA PIZZA&PASTA","Italian","Wed–Sun","14:00"],["KNOCK","Italian","Mon–Sun","14:30"],
+["HOI","Chinese","Tue–Fri","14:00"],["Jasmine","Chinese","Mon–Sun","14:00"],["Jin Ding Rou 本店","Chinese","Mon–Sun","15:00"],["溢彩流香 餃子小厨 恵比寿","Chinese","Varies","14:30"],
+["Le lion","International","Tue–Sat","14:00"],["95Yooya","International","Mon–Sun","15:00"],["Burger Mania Ebisu","International","Mon–Sun","21:30"],["Ta-im","International","Thu–Mon","14:00"],
+["city salad","Healthy","Mon–Sun","20:00"],["Hemp Cafe","Healthy","Wed–Sun","14:30"],["とうふ空野","Healthy","Mon–Sun","14:00"],["豆腐食堂","Healthy","Mon–Sun","14:30"],
+["マーサーブランチ","Café","Daily","No closing"],["nemu coffee","Café","Daily","No closing"]
+];
+const icons={"Japanese":"🍚","Italian":"🍝","Chinese":"🥢","International":"🌎","Healthy":"🌿","Café":"☕"};
+const catEl=document.getElementById("categories");
+cats.forEach(c=>{let b=document.createElement("button");b.className="cat";b.innerHTML=`<span class="icon">${c[0]}</span><span>${c[1]}</span>`;b.onclick=()=>openCategory(c[1]);catEl.appendChild(b)});
+function show(id){document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");window.scrollTo(0,0)}
+function goHome(){show("home")}
+function openCategory(cat){document.getElementById("listTitle").textContent=cat;document.getElementById("restaurantList").innerHTML=data.filter(r=>r[1]===cat).map(r=>`<article class="restaurant"><h2>${icons[r[1]]} ${r[0]}</h2><div class="meta">Open: ${r[2]}</div><div class="meta lo">Lunch L.O.: ${r[3]}</div></article>`).join("");show("list")}
+function openDarts(){show("darts");throwDart()}
+function throwDart(){let r=data[Math.floor(Math.random()*data.length)];document.getElementById("dartResult").textContent=r[0];document.getElementById("dartMeta").textContent=`${r[1]}  ·  Lunch L.O. ${r[3]}`}
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{})}
+</script>
+</body></html>
